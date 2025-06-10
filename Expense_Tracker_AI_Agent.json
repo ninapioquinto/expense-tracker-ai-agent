@@ -1,0 +1,349 @@
+{
+  "name": "Expense Tracker AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful accountant. Use save to db tool to save expense message to DB. respond with \"Your expense saved, here is the output of save sub-workflow:[data]\"",
+          "maxIterations": 3
+        }
+      },
+      "id": "000ee302-ca61-0000-a82d-a4ac1d544fd7",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -860,
+        -420
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "00d004e1-a000-4a26-9672-468c8a6fca0a",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -1220,
+        -420
+      ],
+      "webhookId": "6a00ec84-000d-4cc4-83b6-06ae4c00dc0f",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "input1"
+            }
+          ]
+        }
+      },
+      "id": "00f09465-ecd4-000b-80e4-3607e00c0ad0",
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -220,
+        -420
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a00a1efd-43c8-00f2-8fa5-bf340216e0bd",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -880,
+        -160
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {},
+      "id": "000ed99d-00aa-401d-9c7a-faf088eba006",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -720,
+        -160
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ebc41000-9000-458f-a057-13fec724a006",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        0,
+        -120
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "text": "=convert expense to JSON: \n\n{{ $json.input1 }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "cost",
+              "type": "number",
+              "description": "expense cost",
+              "required": true
+            },
+            {
+              "name": "descr",
+              "description": "description of expense",
+              "required": true
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "description": "date in UTC format. "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc0be4f3-8009-4d0e-8fea-aad705fae11d",
+      "name": "Expense text to JSON parser",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        0,
+        -420
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "0_BMLmh0MtmQarWuZIJANMZSkjaQ0Rc0YYLhwyz1Sec09",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_BMLmh5MtmQarWuZIJANQZSkjaQ2Rc3YYLhwyz1Sec0/edit?usp=drivesdk",
+          "cachedResultName": "ai-expense"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_BMLmh5MtmQarWuZIJANQZSkjaQ2Rc3YYLhwyz1Sec0/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "msg": "={{ $('Workflow Input Trigger').item.json.input1 }}",
+            "cost": "={{ $json.output.cost }}",
+            "date": "={{ $json.output.date ? $json.output.date : $now }}",
+            "descr": "={{ $json.output.descr }}"
+          },
+          "schema": [
+            {
+              "id": "date",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "date",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cost",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "cost",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "descr",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "descr",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "msg",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "msg",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "id": "001fc402-693f-00b7-8fe6-a4cebd4be114",
+      "name": "Save expense into Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        360,
+        -420
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "name": "save_expense_in_db",
+        "description": "Call this tool to save expense in db.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "aLTkMiEDYXbMK4fT",
+          "cachedResultName": "sub-workflow1"
+        },
+        "workflowInputs": {
+          "value": {
+            "input1": "={{ $json.chatInput }}"
+          },
+          "schema": [
+            {
+              "id": "input1",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "input1",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "id": "d76000af-3e6f-43df-a2f1-fdd024000f9e",
+      "name": "Parse msg and save to Sheets",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "position": [
+        -560,
+        -160
+      ],
+      "notesInFlow": true,
+      "typeVersion": 2,
+      "notes": "Make sure that this SAME workflow is chosen in the Workflow dropdown!"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Expense text to JSON parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Expense text to JSON parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expense text to JSON parser": {
+      "main": [
+        [
+          {
+            "node": "Save expense into Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse msg and save to Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2c72b5f61c87fb59cfbdb0287974842079e24c4fb1d6c1100f9dbd700f2d1b0e"
+  },
+  "tags": [
+    {
+      "name": "tutorial",
+      "id": "wAB9dzAnX1ztajBg",
+      "createdAt": "2025-06-10T10:38:12.791Z",
+      "updatedAt": "2025-06-10T10:38:12.791Z"
+    }
+  ]
+}
