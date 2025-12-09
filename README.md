@@ -58,9 +58,5 @@ It’s especially useful when paired with other workflows, such as monthly repor
 
 ---
 
-##  Created by Maia P.
+##  Created by Aria Pioquinto
 
-**AI Automation Engineer**    
-Helping businesses scale smart systems with ai automation and crm solutions.
-
-> Let’s build your custom system
